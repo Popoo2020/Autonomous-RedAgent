@@ -1,5 +1,6 @@
 # Changelog
 
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
@@ -7,6 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- Added GitHub Actions CI workflow
+-- Added GitHub Actions CI workflow
 - Normalized Unicode dashes in documentation
- -iMnimal smoke tests to improve CI stability
+- Minimal smoke tests to improve CI stability
