@@ -1,38 +1,77 @@
 # Autonomous‑RedAgent
 
-**AI‑driven offensive security agent for reconnaissance and payload generation**
+[![CI](https://github.com/your-org/Autonomous-RedAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/Autonomous-RedAgent/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Overview
-Autonomous‑RedAgent is a Python‑based tool that automates reconnaissance and exploit preparation. It leverages Nmap via Python wrappers to perform network scans, consumes CVE feeds to map detected services to known vulnerabilities, and uses an LLM to summarise and prioritise attack vectors. The goal is to augment red‑team efficiency and provide actionable insights without manual sifting through long vulnerability lists.
+**Autonomous‑RedAgent** is an extensible framework for controlled red‑team automation.  It
+enables security practitioners to perform reconnaissance and vulnerability
+enumeration against a defined allowlist of targets while honouring clear
+rules of engagement.  The project is designed for research and educational
+purposes and should never be used outside of an authorized scope.
 
-### Features
-* **Automated Reconnaissance:** Uses Nmap to discover hosts, open ports and service versions. Results are parsed into structured objects.
-* **CVE Mapping:** Downloads and parses CVE feeds; correlates discovered services with relevant CVEs and severity information.
-* **LLM Summarisation:** An AI model prioritises vulnerabilities based on exploitability and business impact.
-* **Payload Generation:** Generates custom scripts or payload templates for exploitation testing (never used against production without authorisation).
-* **Extensible:** Designed to integrate additional modules such as Shodan lookups, OSINT or malware analysis.
+## Features
 
-### Repository Structure
+* **Pluggable architecture** – Reconnaissance modules live under a
+  `plugins/` directory (not yet populated in this pre‑release) and implement a
+  standard interface so that new scanners can be dropped in easily.
+* **Scope & rules enforcement** – A default **safe mode** prevents
+  exploitation or destructive actions.  The tool cross‑checks targets against a
+  configurable allowlist before executing any scan.
+* **CVE ingestion cache** – Planned functionality to ingest CVE data from
+  authoritative sources and cache it locally, avoiding repeated downloads and
+  enabling schema validation.
+* **Structured reporting** – Future versions will output findings in a
+  machine‑readable JSON format including services, CVEs, and a risk ranking.
+* **Audit trail** – Designed to log who ran the agent, what targets were
+  tested, and when, supporting traceability and compliance requirements.
 
+## Quickstart
+
+This repository currently contains documentation and scaffolding.  Once the
+core modules are implemented, you will be able to run the agent locally via
+Python:
+
+```bash
+git clone https://github.com/your‑org/Autonomous‑RedAgent.git
+cd Autonomous‑RedAgent
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python src/autonomous_redagent/main.py --targets allowlist.txt
 ```
-Autonomous-RedAgent/
-├── README.md
-├── requirements.txt
-├── src/
-│   ├── recon.py          # Nmap scanning and result parsing
-│   ├── cve.py            # Fetch and parse CVE feeds
-│   ├── llm.py            # AI summarisation and prioritisation
-│   ├── payloads.py       # Payload template generation
-│   └── utils.py
-└── reports/              # Generated reconnaissance and CVE reports
-```
 
-### Usage
-1. Install dependencies: `pip install -r requirements.txt`.
-2. Populate `.env` with API keys (e.g., for CVE feeds or LLM services).
-3. Run `python src/recon.py --target <IP/CIDR>` to perform a scan and generate an attack surface report.
-4. Use `python src/cve.py --input reports/scan_results.json` to map services to vulnerabilities.
-5. Generate payload templates with `python src/payloads.py`.
+Please note that execution should only occur after you have defined your
+**allowlist** and ensured that you are authorized to test the specified
+systems.
 
-### Disclaimer
-This tool is intended for authorised penetration testing and educational purposes only. Improper use may violate laws and ethical guidelines.
+## Security & Safety
+
+Red‑team automation carries inherent risks.  This project includes
+`docs/safety_boundaries.md` which describes the **rules of engagement**, the
+behaviour of **SAFE_MODE**, and how to limit scope.  The accompanying
+`DISCLAIMER.md` reiterates that the software is for authorized use only.
+
+If you discover a security vulnerability or have concerns about the
+implementation, please report it through the process defined in
+`SECURITY.md`.
+
+## Roadmap
+
+This project is in its infancy.  Planned improvements include:
+
+1. Implementing the plugin interface and adding initial recon modules.
+2. Adding a CVE ingestion cache and schema validation.
+3. Creating structured JSON reports with risk scoring.
+4. Extending audit logging and role‑based access controls.
+5. Adding unit tests and a CI pipeline for linting and testing.
+
+Contributions are welcome!  See `CONTRIBUTING.md` for details on how to
+participate.
+
+## Known Limitations
+
+This repository contains an early proof of concept.  Key functionality such
+as reconnaissance plugins, CVE ingestion and structured reporting has not
+yet been implemented.  The safe‑mode logic and rules of engagement are
+provided for educational purposes only; you must ensure that any
+scanning performed with this tool is authorized and within a defined
+scope.  Use at your own risk.
