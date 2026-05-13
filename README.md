@@ -1,77 +1,119 @@
-# Autonomous‑RedAgent
+# Autonomous-RedAgent
 
-[![CI](https://github.com/your-org/Autonomous-RedAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/Autonomous-RedAgent/actions/workflows/ci.yml)
+[![CI](https://github.com/Popoo2020/Autonomous-RedAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/Popoo2020/Autonomous-RedAgent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Autonomous‑RedAgent** is an extensible framework for controlled red‑team automation.  It
-enables security practitioners to perform reconnaissance and vulnerability
-enumeration against a defined allowlist of targets while honouring clear
-rules of engagement.  The project is designed for research and educational
-purposes and should never be used outside of an authorized scope.
+**Autonomous-RedAgent** is a safety-first red-team automation lab for **authorised reconnaissance planning**.  
+The current implementation deliberately focuses on **scope enforcement**, **allowlist validation**, and **non-destructive recon plan generation** rather than exploitation logic.
 
-## Features
+> **Status:** working safety-oriented baseline / active expansion.  
+> This repository is designed for ethical research, authorised testing, and portfolio demonstration.
 
-* **Pluggable architecture** – Reconnaissance modules live under a
-  `plugins/` directory (not yet populated in this pre‑release) and implement a
-  standard interface so that new scanners can be dropped in easily.
-* **Scope & rules enforcement** – A default **safe mode** prevents
-  exploitation or destructive actions.  The tool cross‑checks targets against a
-  configurable allowlist before executing any scan.
-* **CVE ingestion cache** – Planned functionality to ingest CVE data from
-  authoritative sources and cache it locally, avoiding repeated downloads and
-  enabling schema validation.
-* **Structured reporting** – Future versions will output findings in a
-  machine‑readable JSON format including services, CVEs, and a risk ranking.
-* **Audit trail** – Designed to log who ran the agent, what targets were
-  tested, and when, supporting traceability and compliance requirements.
+## What is implemented
+
+| Capability | Status |
+|---|---|
+| Exact target allowlist matching | ✅ Implemented |
+| Wildcard scope matching | ✅ Implemented |
+| Out-of-scope target blocking | ✅ Implemented |
+| Safe recon plan generation | ✅ Implemented |
+| Deterministic pytest coverage | ✅ Implemented |
+| CI that enforces safety/scope tests | ✅ Implemented |
+| Actual recon execution runners | 🟡 Planned |
+| Plugin registry and module interface | 🟡 Planned |
+| Structured findings report | 🟡 Planned |
+| CVE enrichment layer | 🟡 Planned |
+
+## Design philosophy
+
+The repository is intentionally built around a simple principle:
+
+> **Automation should not act before scope is verified.**
+
+For that reason, the first implemented layer is not exploitation, scanning volume, or payload generation.  It is the **safety gate** that determines whether a target is authorised and whether a safe recon plan may even be prepared.
+
+## Repository structure
+
+```text
+src/
+  scope.py                    # Allowlist and target scope decisions
+  recon.py                    # Safe recon-plan builder
+
+tests/
+  test_scope_and_recon.py     # Scope enforcement and safe-mode tests
+
+requirements.txt
+.github/workflows/ci.yml
+```
+
+## Implemented modules
+
+### `src/scope.py`
+Provides:
+
+- hostname normalisation
+- exact allowlist matching
+- wildcard matching such as `*.lab.example.com`
+- deterministic `ScopeDecision` objects
+
+### `src/recon.py`
+Provides:
+
+- `build_recon_plan()`
+- explicit allowlist gate before any action planning
+- safe, non-destructive action list placeholders:
+  - `dns_lookup`
+  - `http_head_request`
+  - `tls_metadata_review`
+
+The function currently **prepares** an auditable plan; it does **not** execute network activity.
 
 ## Quickstart
 
-This repository currently contains documentation and scaffolding.  Once the
-core modules are implemented, you will be able to run the agent locally via
-Python:
-
 ```bash
-git clone https://github.com/your‑org/Autonomous‑RedAgent.git
-cd Autonomous‑RedAgent
-python -m venv .venv && source .venv/bin/activate
+git clone https://github.com/Popoo2020/Autonomous-RedAgent.git
+cd Autonomous-RedAgent
+
+python -m venv .venv
+source .venv/bin/activate
+
 pip install -r requirements.txt
-python src/autonomous_redagent/main.py --targets allowlist.txt
+pytest -q
 ```
 
-Please note that execution should only occur after you have defined your
-**allowlist** and ensured that you are authorized to test the specified
-systems.
+## Example
 
-## Security & Safety
+```python
+from src.recon import build_recon_plan
 
-Red‑team automation carries inherent risks.  This project includes
-`docs/safety_boundaries.md` which describes the **rules of engagement**, the
-behaviour of **SAFE_MODE**, and how to limit scope.  The accompanying
-`DISCLAIMER.md` reiterates that the software is for authorized use only.
+plan = build_recon_plan(
+    target="lab.example.com",
+    allowlist=["lab.example.com", "*.lab.example.com"],
+    safe_mode=True,
+)
 
-If you discover a security vulnerability or have concerns about the
-implementation, please report it through the process defined in
-`SECURITY.md`.
+print(plan)
+```
+
+## Safety guarantees in the current baseline
+
+- targets outside the allowlist are rejected
+- empty allowlists fail closed
+- current code generates plans only; it does not conduct active scanning
+- CI validates that out-of-scope targets are blocked
 
 ## Roadmap
 
-This project is in its infancy.  Planned improvements include:
+1. Add a formal plugin interface for authorised recon modules
+2. Add read-only execution runners for DNS/HTTP/TLS metadata collection
+3. Produce structured JSON findings reports
+4. Add rules-of-engagement configuration files
+5. Add CVE enrichment only for explicitly authorised and identified services
+6. Add audit-log examples and clearer operator prompts
 
-1. Implementing the plugin interface and adding initial recon modules.
-2. Adding a CVE ingestion cache and schema validation.
-3. Creating structured JSON reports with risk scoring.
-4. Extending audit logging and role‑based access controls.
-5. Adding unit tests and a CI pipeline for linting and testing.
+## Limitations
 
-Contributions are welcome!  See `CONTRIBUTING.md` for details on how to
-participate.
-
-## Known Limitations
-
-This repository contains an early proof of concept.  Key functionality such
-as reconnaissance plugins, CVE ingestion and structured reporting has not
-yet been implemented.  The safe‑mode logic and rules of engagement are
-provided for educational purposes only; you must ensure that any
-scanning performed with this tool is authorized and within a defined
-scope.  Use at your own risk.
+- This is not a finished autonomous red-team platform
+- It does not yet execute recon actions against targets
+- It does not generate payloads or perform exploitation
+- The present value is in demonstrating **safe automation architecture**, **scope control**, and a responsible implementation path
