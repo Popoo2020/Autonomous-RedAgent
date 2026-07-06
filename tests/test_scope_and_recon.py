@@ -19,6 +19,12 @@ def test_out_of_scope_target_is_blocked() -> None:
     assert decision.reason == "outside_allowlist"
 
 
+def test_empty_allowlist_fails_closed() -> None:
+    decision = is_target_allowed("lab.example.com", [])
+    assert decision.allowed is False
+    assert decision.reason == "allowlist_empty"
+
+
 def test_recon_plan_is_empty_when_target_is_out_of_scope() -> None:
     plan = build_recon_plan("outside.example.net", ["lab.example.com"])
     assert plan["allowed"] is False
