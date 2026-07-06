@@ -37,6 +37,10 @@ jobs:
         run: |
           python -m pytest -q
 
+      - name: Run Bandit SAST
+        run: |
+          bandit -r src -ll
+
       - name: Audit Python dependencies
         run: |
           pip-audit -r requirements.txt
